@@ -98,9 +98,9 @@
     <td>192.168.50.20/26</td>
 </tr>
 <tr>
-    <td>office1Server</td>
+    <td rowspan="2">office1Server</td>
     <td>192.168.2.130/26</td>
-    <td>Ubuntu 20</td>
+    <td rowspan="2">Ubuntu 20</td>
 </tr>
 <tr>
     <td>192.168.50.21/26</td>
