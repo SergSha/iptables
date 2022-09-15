@@ -1,0 +1,7 @@
+---
+- name: Iptables | Install and Configure
+  hosts: all
+  become: true
+
+  roles:
+    - { role: iptables, when: ansible_system == 'Linux' }

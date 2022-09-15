@@ -1,0 +1,28 @@
+---
+# handlers file for iptables
+
+- name: iptables start and enable
+  service:
+    name: iptables
+    state: started
+    enabled: true
+
+- name: sysctl setting
+  command: sysctl -p /etc/sysctl.d/{{ item }}
+  loop:
+  - "01-forwarding.conf"
+
+- name: network restart redhat
+  service:
+    name: network.service
+    state: restarted
+#  when: ansible_os_family == "RedHat"
+
+- name: netplan apply ubuntu
+  command: netplan apply
+#  when: ansible_os_family == "Ubuntu"
+
+- name: network restart debian
+  shell: ifdown eth1 && ifup eth1
+#  when: ansible_os_family == "Debian"
+
