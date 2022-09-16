@@ -26,3 +26,8 @@
   shell: ifdown eth1 && ifup eth1
 #  when: ansible_os_family == "Debian"
 
+- name: nginx restart
+  service:
+    name: nginx
+    state: restarted
+    enabled: true

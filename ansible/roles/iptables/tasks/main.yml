@@ -97,6 +97,14 @@
 
 - name: centralServer | Setup network setting
   block:
+  - name: centralServer | Install EPEL Repo package from standart repo
+    yum: name=epel-release state=present
+
+  - name: centralServer | Install Nginx
+    yum: name=nginx state=present
+    notify:
+    - nginx restart
+  
   - name: centralServer | disable default route
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-eth0

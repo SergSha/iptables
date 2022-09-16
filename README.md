@@ -67,12 +67,9 @@
     <td>192.168.50.12/24</td>
 </tr>
 <tr>
-    <td rowspan="3">inetRouter2</td>
-    <td>Default-NAT address VirtualBox</td>
-    <td rowspan="3">CentOS 7</td>
-</tr>
-<tr>
-    <td>192.168.255.3/30</td>
+    <td rowspan="2">inetRouter2</td>
+	<td>192.168.255.3/30</td>
+    <td rowspan="2">CentOS 7</td>
 </tr>
 <tr>
     <td>192.168.50.13/24</td>
