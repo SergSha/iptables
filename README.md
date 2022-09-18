@@ -130,3 +130,79 @@
 </table>
 
 
+
+
+
+
+<h4>Настройка Port Knocking</h4>
+
+<p>У нас есть сервер inetRouter с IP-адресом 192.168.255.1. Нам необходимо запретить до него доступ всем, кроме тех, кто знает «как правильно постучаться». Последовательность портов будет такая: 8881 7777 9991</p>
+
+<p>Создаём длинное правило на сервере. Записываем его в файл iptables.rules:</p>
+
+<pre>[root@inetRouter ~]# vi /etc/sysconfig/iptables</pre>
+
+<pre>*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:TRAFFIC - [0:0]
+:SSH-INPUT - [0:0]
+:SSH-INPUTTWO - [0:0]
+
+-A INPUT -j TRAFFIC
+-A TRAFFIC -p icmp --icmp-type any -j ACCEPT
+-A TRAFFIC -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH2 -j ACCEPT
+-A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH2 --remove -j DROP
+-A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 9991 -m recent --rcheck --name SSH1 -j SSH-INPUTTWO
+-A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH1 --remove -j DROP
+-A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 7777 -m recent --rcheck --name SSH0 -j SSH-INPUT
+-A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH0 --remove -j DROP
+-A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 8881 -m recent --name SSH0 --set -j DROP
+-A SSH-INPUT -m recent --name SSH1 --set -j DROP
+-A SSH-INPUTTWO -m recent --name SSH2 --set -j DROP
+-A TRAFFIC -j DROP
+COMMIT</pre>
+
+<p>На сервере выполняем команды:</p>
+
+<pre>systemctl start iptables
+systemctl enable iptables
+iptables-restore < iptables.rules
+service iptables save</pre>
+
+<p>Теперь доступ есть только у тех, кто знает нашу последовательность. Я буду «стучаться» с помощью nmap. Для этого напишем простенький скрипт:</p>
+
+<pre>[root@centralRouter ~]# vi ./knocking</pre>
+
+<pre>#!/bin/bash
+HOST=$1
+shift
+for ARG in "$@"
+do
+  sudo nmap -Pn --max-retries 0 -p $ARG $HOST
+done</pre>
+
+<pre>[root@centralRouter ~]# chmod +x ./knocking
+[root@centralRouter ~]#</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

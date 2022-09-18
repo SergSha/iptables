@@ -72,6 +72,12 @@
   
 - name: centralRouter | Setup network setting
   block:
+  - name: install nmap on centralRouter
+    yum:        
+      name:
+      - nmap
+      state: present
+
   - name: centralRouter | disable default route
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -93,15 +99,27 @@
     - "eth5"
     - "eth6"
     notify: network restart redhat
+
+  - name: centralRouter | Port Knocking script
+    copy:
+      src: knock.sh
+      dest: /root/knock.sh
+      owner: root
+      group: root
+      mode: 0755
   when: (ansible_hostname == "centralRouter")
 
 - name: centralServer | Setup network setting
   block:
   - name: centralServer | Install EPEL Repo package from standart repo
-    yum: name=epel-release state=present
+    yum:
+      name: epel-release
+      state: present
 
   - name: centralServer | Install Nginx
-    yum: name=nginx state=present
+    yum:
+      name: nginx
+      state: present
     notify:
     - nginx restart
   
@@ -116,6 +134,17 @@
       line: GATEWAY=192.168.0.1
     notify: network restart redhat
   when: ansible_hostname == "centralServer"
+
+- name: inetRouter2
+  block:
+  - name: inetRouter2 | iptables
+    command: {{ item }}
+    loop:
+    - iptables -t nat -A PREROUTING -d 192.168.50.13/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+    - iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -d 192.168.0.2/32 -j MASQUERADE
+    - iptables -t filter -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+    - iptables -t filter -A FORWARD -d 192.168.0.2/32 -i eth2 -p tcp -m tcp --dport 80 -j ACCEPT
+  when: ansible_hostname == "inetRouter2"
 
 - name: office1Router | set up route on 
   lineinfile:
