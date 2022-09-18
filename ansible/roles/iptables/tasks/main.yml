@@ -40,12 +40,17 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    notify: iptables start and enable
+    notify: iptables restart and enable
     tags:
     - comment-icmp-host-prohibited
 
   - name: inetRouter | add masquerade
-    command: iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    shell: {{ item }}
+    loop:
+    - iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    - ptables-save > /etc/sysconfig/iptables
+    notify:
+    - iptables restart and enable
     tags: 
     - add-masquerade
 
@@ -137,13 +142,50 @@
 
 - name: inetRouter2
   block:
+- name: install iptables
+    yum:
+      name:
+      - iptables
+      - iptables-services
+      state: present
+      update_cache: true
+
+  - name: inetRouter | comment lines with icmp-host-prohibited
+    replace:
+      path: /etc/sysconfig/iptables
+      regexp: '^(.*)icmp-host-prohibited(.*)$'
+      replace: '#\1'
+    notify: iptables restart and enable
+
   - name: inetRouter2 | iptables
-    command: {{ item }}
+    shell: {{ item }}
     loop:
     - iptables -t nat -A PREROUTING -d 192.168.50.13/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
     - iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -d 192.168.0.2/32 -j MASQUERADE
     - iptables -t filter -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
     - iptables -t filter -A FORWARD -d 192.168.0.2/32 -i eth2 -p tcp -m tcp --dport 80 -j ACCEPT
+    - ptables-save > /etc/sysconfig/iptables
+    notify:
+    - iptables restart and enable
+
+  - name: inetRouter2 | disable default route
+    lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-eth0
+      line: DEFROUTE=no
+
+  - name: inetRouter2 | add default gateway
+    lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-eth1
+      line: GATEWAY=192.168.50.1
+
+  - name: inetRouter2 | set up route
+    copy:
+      src: inetRouter2-route-eth1
+      dest: /etc/sysconfig/network-scripts/route-eth1
+      owner: root
+      group: root
+      mode: 0644
+    notify: network restart redhat
   when: ansible_hostname == "inetRouter2"
 
 - name: office1Router | set up route on 
