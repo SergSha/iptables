@@ -1,11 +1,16 @@
 ---
 # handlers file for iptables
 
-- name: iptables restart and enable
+- name: iptables restart
   service:
     name: iptables
     state: restarted
     enabled: true
+
+- name: iptables save
+  iptables_state:
+    state: saved
+    path: /etc/sysconfig/iptables
 
 - name: sysctl setting
   command: sysctl -p /etc/sysctl.d/{{ item }}

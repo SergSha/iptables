@@ -40,19 +40,22 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    notify: iptables restart and enable
+    notify: 
+    - iptables restart
     tags:
     - comment-icmp-host-prohibited
 
+  # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
   - name: inetRouter | add masquerade
-    shell: {{ item }}
-    loop:
-    - iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-    - ptables-save > /etc/sysconfig/iptables
+    iptables:
+      table: nat 
+      chain: POSTROUTING
+      out_interface: eth0
+      destination: ! 192.168.0.0/16
+      jump: MASQUERADE
     notify:
-    - iptables restart and enable
-    tags: 
-    - add-masquerade
+    - iptables save
+    - iptables restart
 
   - name: inetRouter | set up route
     copy:
@@ -61,7 +64,8 @@
       owner: root
       group: root
       mode: 0644
-    notify: network restart redhat
+    notify: 
+    - network restart redhat
   when: ansible_hostname == "inetRouter"
 
 - name: All Routers | set up forward packages across routers
@@ -72,7 +76,8 @@
     group: root
     mode: '0644'
     create: yes
-  notify: sysctl setting
+  notify: 
+  - sysctl setting
   when: "'routers' in group_names"
   
 - name: centralRouter | Setup network setting
@@ -103,7 +108,8 @@
     loop:
     - "eth5"
     - "eth6"
-    notify: network restart redhat
+    notify: 
+    - network restart redhat
 
   - name: centralRouter | Port Knocking script
     copy:
@@ -137,12 +143,13 @@
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-eth1
       line: GATEWAY=192.168.0.1
-    notify: network restart redhat
+    notify: 
+    - network restart redhat
   when: ansible_hostname == "centralServer"
 
 - name: inetRouter2
   block:
-- name: install iptables
+  - name: install iptables
     yum:
       name:
       - iptables
@@ -150,23 +157,25 @@
       state: present
       update_cache: true
 
-  - name: inetRouter | comment lines with icmp-host-prohibited
+  - name: inetRouter2 | comment lines with icmp-host-prohibited
     replace:
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    notify: iptables restart and enable
+    notify: 
+    - iptables restart
 
-  - name: inetRouter2 | iptables
-    shell: {{ item }}
-    loop:
-    - iptables -t nat -A PREROUTING -d 192.168.50.13/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
-    - iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -d 192.168.0.2/32 -j MASQUERADE
-    - iptables -t filter -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
-    - iptables -t filter -A FORWARD -d 192.168.0.2/32 -i eth2 -p tcp -m tcp --dport 80 -j ACCEPT
-    - ptables-save > /etc/sysconfig/iptables
-    notify:
-    - iptables restart and enable
+#  - name: inetRouter2 | iptables
+#    shell: {{ item }}
+#    loop:
+#    - iptables -t nat -A PREROUTING -d 192.168.50.13/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+#    - iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -d 192.168.0.2/32 -j MASQUERADE
+#    - iptables -t filter -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+#    - iptables -t filter -A FORWARD -d 192.168.0.2/32 -i eth2 -p tcp -m tcp --dport 80 -j ACCEPT
+#    - ptables-save > /etc/sysconfig/iptables
+#    notify:
+#    - iptables save
+#    - iptables restart
 
   - name: inetRouter2 | disable default route
     lineinfile:
@@ -185,7 +194,8 @@
       owner: root
       group: root
       mode: 0644
-    notify: network restart redhat
+    notify: 
+    - network restart redhat
   when: ansible_hostname == "inetRouter2"
 
 - name: office1Router | set up route on 
@@ -193,7 +203,8 @@
     path: /etc/netplan/50-vagrant.yaml
     insertafter: '^(.*)192.168.255.10(.*)$'
     line: "      routes:\n      - to: 0.0.0.0/0\n        via: 192.168.255.9"
-  notify: netplan apply ubuntu
+  notify: 
+  - netplan apply ubuntu
   when: ansible_hostname == "office1Router"
 
 - name: office2Router | set up route
@@ -201,7 +212,8 @@
     path: /etc/network/interfaces
     insertafter: '^(.*)192.168.255.6(.*)$'
     line: "      gateway 192.168.255.5"
-  notify: network restart debian
+  notify: 
+  - network restart debian
   when: ansible_hostname == "office2Router"
 
 - name: office1Server | set up route
@@ -209,7 +221,8 @@
     path: /etc/netplan/50-vagrant.yaml
     insertafter: '^(.*)192.168.2.130(.*)$'
     line: "      routes:\n      - to: 0.0.0.0/0\n        via: 192.168.2.129"
-  notify: netplan apply ubuntu
+  notify: 
+  - netplan apply ubuntu
   when: ansible_hostname == "office1Server"
 
 - name: office2Server | set up route
@@ -217,6 +230,7 @@
     path: /etc/network/interfaces
     insertafter: '^(.*)192.168.1.2(.*)$'
     line: "      gateway 192.168.1.1"
-  notify: network restart debian
+  notify: 
+  - network restart debian
   when: ansible_hostname == "office2Server"
 
