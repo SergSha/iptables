@@ -134,7 +134,7 @@
 
 
 
-<h4>Настройка Port Knocking</h4>
+<h4>Реализация Port Knocking</h4>
 
 <p>У нас есть сервер inetRouter с IP-адресом 192.168.255.1. Нам необходимо запретить до него доступ всем, кроме тех, кто знает «как правильно постучаться». Последовательность портов будет такая: 8881 7777 9991</p>
 
@@ -189,7 +189,50 @@ done</pre>
 
 
 
+<pre>[root@centralRouter ~]# ssh vagrant@192.168.255.1
+ssh: connect to host 192.168.255.1 port 22: Connection timed out
+[root@centralRouter ~]#</pre>
 
+<pre>[root@centralRouter ~]# ./knock.sh 192.168.255.1 8881 7777 9991
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2022-09-19 13:45 UTC
+Warning: 192.168.255.1 giving up on port because retransmission cap hit (0).
+Nmap scan report for 192.168.255.1
+Host is up (0.0018s latency).
+PORT     STATE    SERVICE
+8881/tcp filtered unknown
+MAC Address: 08:00:27:72:76:25 (Cadmus Computer Systems)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.38 seconds
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2022-09-19 13:45 UTC
+Warning: 192.168.255.1 giving up on port because retransmission cap hit (0).
+Nmap scan report for 192.168.255.1
+Host is up (0.00093s latency).
+PORT     STATE    SERVICE
+7777/tcp filtered cbt
+MAC Address: 08:00:27:72:76:25 (Cadmus Computer Systems)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.35 seconds
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2022-09-19 13:45 UTC
+Warning: 192.168.255.1 giving up on port because retransmission cap hit (0).
+Nmap scan report for 192.168.255.1
+Host is up (0.0019s latency).
+PORT     STATE    SERVICE
+9991/tcp filtered issa
+MAC Address: 08:00:27:72:76:25 (Cadmus Computer Systems)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.36 seconds
+[root@centralRouter ~]# ssh vagrant@192.168.255.1
+The authenticity of host '192.168.255.1 (192.168.255.1)' can't be established.
+ECDSA key fingerprint is SHA256:YqvRT1lwJqKWa5Oe84VgWCsDm/wUvr0sOJbuPJ/5bxg.
+ECDSA key fingerprint is MD5:bd:eb:71:0d:b3:f4:b8:0b:a7:45:8e:6d:96:b1:80:83.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.255.1' (ECDSA) to the list of known hosts.
+vagrant@192.168.255.1's password:
+Last login: Mon Sep 19 11:45:49 2022 from 10.0.2.2
+[vagrant@inetRouter ~]$</pre>
 
 
 
