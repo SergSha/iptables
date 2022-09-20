@@ -13,7 +13,7 @@
 #    path: /etc/sysconfig/iptables
 - name: iptables save
   command: service iptables save
-  #shell: iptables-save > /etc/sysconfig/iptables
+#  shell: iptables-save > /etc/sysconfig/iptables
 
 - name: sysctl setting
   command: sysctl -p /etc/sysctl.d/{{ item }}
@@ -27,10 +27,11 @@
 #    enabled: yes
 
 - name: network restart redhat
-  service:
-    name: network.service
-    state: restarted
-  when: ansible_os_family == "RedHat"
+  shell: service network restart; sleep 3
+#  service:
+#    name: network
+#    state: restarted
+#  when: ansible_os_family == "RedHat"
 
 - name: netplan apply ubuntu
   command: netplan apply
@@ -45,3 +46,4 @@
     name: nginx
     state: restarted
     enabled: true
+
