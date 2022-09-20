@@ -45,6 +45,16 @@
     tags:
     - comment-icmp-host-prohibited
 
+  - name: inetRouter | set up route
+    copy:
+      src: inetRouter-route-eth1
+      dest: /etc/sysconfig/network-scripts/route-eth1
+      owner: root
+      group: root
+      mode: 0644
+    notify: 
+    - network restart redhat
+
   # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
   - name: inetRouter | add masquerade
     iptables:
@@ -56,16 +66,6 @@
     notify:
     - iptables save
     - iptables restart
-
-  - name: inetRouter | set up route
-    copy:
-      src: inetRouter-route-eth1
-      dest: /etc/sysconfig/network-scripts/route-eth1
-      owner: root
-      group: root
-      mode: 0644
-    notify: 
-    - network restart redhat
   when: ansible_hostname == "inetRouter"
 
 - name: All Routers | set up forward packages across routers
