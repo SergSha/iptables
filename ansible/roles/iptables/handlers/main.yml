@@ -20,17 +20,17 @@
   loop:
   - "01-forwarding.conf"
 
-- name: network restart redhat
-  systemd:
-    name: network.service
-    state: restarted
-    enabled: yes
-
 #- name: network restart redhat
-#  service:
+#  systemd:
 #    name: network.service
 #    state: restarted
-#  when: ansible_os_family == "RedHat"
+#    enabled: yes
+
+- name: network restart redhat
+  service:
+    name: network.service
+    state: restarted
+  when: ansible_os_family == "RedHat"
 
 - name: netplan apply ubuntu
   command: netplan apply
