@@ -18,3 +18,29 @@ COMMIT
 -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
 COMMIT
 # Completed on Tue Sep 20 13:11:25 2022
+
+
+Стартовая настройка
+Мы можем начать настройку брандмауэра на сервере с этих команд.
+
+Разрешаем SSH:
+
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+Создаем правила для нормальной работы apt или yum:
+
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+Разрешаем ICMP (для выполнения команды ping):
+
+iptables -A INPUT -p icmp -j ACCEPT
+
+Разрешаем все входящие на адрес локальной петли:
+
+iptables -A INPUT -i lo -j ACCEPT
+
+Ставим политику запрета на входящие и разрешаем все исходящие:
+
+iptables -P INPUT DROP
+
+iptables -P OUTPUT ACCEPT

@@ -378,6 +378,13 @@ iptables -A FORWARD -i eth2 -d 192.168.0.2 -p tcp --dport 80 -j ACCEPT
 -A FORWARD -d 192.168.0.2/32 -i eth2 -p tcp -m tcp --dport 80 -j ACCEPT
 
 
+#-A PREROUTING -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+#-A POSTROUTING -p tcp -m tcp -d 192.168.0.2 --dport 80 -j SNAT --to-source 192.168.0.34:8080
+-A PREROUTING -p tcp -i eth2 --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+#-A POSTROUTING -p tcp -o eth1 --sport 80 -j SNAT --to-source 192.168.50.13
+-A POSTROUTING -d 192.168.0.2 -s 192.168.50.0/24 -j MASQUERADE
+
+
 
 
 

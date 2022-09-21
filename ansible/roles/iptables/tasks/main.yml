@@ -175,7 +175,7 @@
   - name: inetRouter2 | add default gateway
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-eth1
-      line: GATEWAY=192.168.50.1
+      line: GATEWAY=192.168.0.33
 
   - name: inetRouter2 | set up route
     copy:
