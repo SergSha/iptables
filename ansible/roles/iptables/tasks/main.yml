@@ -1,6 +1,18 @@
 ---
 # tasks file for iptables
 
+- name: All Routers | set up forward packages across routers
+  lineinfile:
+    path: /etc/sysctl.d/01-forwarding.conf
+    line: net.ipv4.conf.all.forwarding=1
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+  notify: 
+  - sysctl setting
+  when: "'routers' in group_names"
+
 - name: Stop Firewalld Service If Running One
   service:
     name: firewalld
@@ -27,7 +39,7 @@
 
 - name: inetRouter | Set up NAT
   block:
-  - name: install iptables
+  - name: inetRouter | install iptables
     yum:
       name:
       - iptables
@@ -69,18 +81,6 @@
     tags:
     - masquerade
   when: ansible_hostname == "inetRouter"
-
-- name: All Routers | set up forward packages across routers
-  lineinfile:
-    path: /etc/sysctl.d/01-forwarding.conf
-    line: net.ipv4.conf.all.forwarding=1
-    owner: root
-    group: root
-    mode: '0644'
-    create: yes
-  notify: 
-  - sysctl setting
-  when: "'routers' in group_names"
   
 - name: centralRouter | Setup network setting
   block:

@@ -27,11 +27,10 @@
 #    enabled: yes
 
 - name: network restart redhat
-  shell: service network restart; sleep 3
-#  service:
-#    name: network
-#    state: restarted
-#  when: ansible_os_family == "RedHat"
+  service:
+    name: network
+    state: restarted
+  when: ansible_os_family == "RedHat"
 
 - name: netplan apply ubuntu
   command: netplan apply
