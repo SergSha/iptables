@@ -45,4 +45,3 @@
     name: nginx
     state: restarted
     enabled: true
-
