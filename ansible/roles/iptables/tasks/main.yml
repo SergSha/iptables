@@ -4,14 +4,12 @@
 - name: All Routers | set up forward packages across routers
   block:
   - lineinfile:
-    path: /etc/sysctl.d/01-forwarding.conf
-    line: net.ipv4.conf.all.forwarding=1
-    owner: root
-    group: root
-    mode: '0644'
-    create: yes
-
-  - meta: flush_handlers
+      path: /etc/sysctl.d/01-forwarding.conf
+      line: net.ipv4.conf.all.forwarding=1
+      owner: root
+      group: root
+      mode: '0644'
+      create: yes
     notify: 
     - sysctl setting
   when: "'routers' in group_names"
@@ -55,12 +53,10 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    tags:
-    - comment-icmp-host-prohibited
-
-  - meta: flush_handlers
     notify: 
     - iptables restart
+    tags:
+    - comment-icmp-host-prohibited
 
   - name: inetRouter | set up route
     copy:
@@ -69,8 +65,6 @@
       owner: root
       group: root
       mode: 0644
-  
-  - meta: flush_handlers
     notify: 
     - network restart redhat
 
@@ -82,13 +76,11 @@
       out_interface: eth0
       destination: "! 192.168.0.0/16"
       jump: MASQUERADE
-    tags:
-    - masquerade
-  
-  - meta: flush_handlers
     notify:
     - iptables save
     - iptables restart
+    tags:
+    - masquerade
   when: ansible_hostname == "inetRouter"
   
 - name: centralRouter | Setup network setting
@@ -119,8 +111,6 @@
     loop:
     - "eth5"
     - "eth6"
-  
-  - meta: flush_handlers
     notify: 
     - network restart redhat
 
@@ -144,8 +134,6 @@
     yum:
       name: nginx
       state: present
-  
-  - meta: flush_handlers
     notify:
     - nginx restart
   
@@ -158,8 +146,6 @@
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-eth1
       line: GATEWAY=192.168.0.1
-  
-  - meta: flush_handlers
     notify: 
     - network restart redhat
   when: ansible_hostname == "centralServer"
@@ -179,8 +165,6 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-  
-  - meta: flush_handlers
     notify: 
     - iptables restart
 
@@ -201,8 +185,6 @@
       owner: root
       group: root
       mode: 0644
-  
-  - meta: flush_handlers
     notify: 
     - network restart redhat
   when: ansible_hostname == "inetRouter2"
@@ -242,4 +224,7 @@
   notify: 
   - network restart debian
   when: ansible_hostname == "office2Server"
+  
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
 
