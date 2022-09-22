@@ -14,6 +14,9 @@
     - sysctl setting
   when: "'routers' in group_names"
 
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
+
 - name: Stop Firewalld Service If Running One
   service:
     name: firewalld
@@ -37,6 +40,9 @@
 - name: All Servers | delete default routes
   command: ip route del default
   when: (ansible_hostname == "office1Router") or (ansible_hostname == "office1Server") or (ansible_hostname == "office2Router") or (ansible_hostname == "office2Server")
+
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
 
 - name: inetRouter | Set up NAT
   block:
@@ -83,6 +89,9 @@
     - masquerade
   when: ansible_hostname == "inetRouter"
   
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
+
 - name: centralRouter | Setup network setting
   block:
   - name: install nmap on centralRouter
@@ -123,6 +132,9 @@
       mode: 0755
   when: (ansible_hostname == "centralRouter")
 
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
+
 - name: centralServer | Setup network setting
   block:
   - name: centralServer | Install EPEL Repo package from standart repo
@@ -149,6 +161,9 @@
     notify: 
     - network restart redhat
   when: ansible_hostname == "centralServer"
+
+- name: Принудительно запускать все handlers на этом этапе, не дожидаясь обычных точек синхронизации
+  meta: flush_handlers
 
 - name: inetRouter2
   block:
