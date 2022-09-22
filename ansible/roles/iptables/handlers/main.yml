@@ -7,10 +7,6 @@
     state: restarted
     enabled: true
 
-#- name: iptables save
-#  iptables_state:
-#    state: saved
-#    path: /etc/sysconfig/iptables
 - name: iptables save
   command: service iptables save
 #  shell: iptables-save > /etc/sysconfig/iptables
@@ -30,18 +26,19 @@
   service:
     name: network
     state: restarted
-  when: ansible_os_family == "RedHat"
+  when: ansible_distribution == "CentOS"
 
 - name: netplan apply ubuntu
   command: netplan apply
-#  when: ansible_os_family == "Ubuntu"
+  when: ansible_distribution == "Ubuntu"
 
 - name: network restart debian
   shell: ifdown eth1 && ifup eth1
-#  when: ansible_os_family == "Debian"
+  when: ansible_distribution == "Debian"
 
 - name: nginx restart
   service:
     name: nginx
     state: restarted
     enabled: true
+
