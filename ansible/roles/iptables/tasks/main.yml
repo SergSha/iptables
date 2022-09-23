@@ -52,8 +52,6 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    notify: 
-    - iptables restart
     tags:
     - comment-icmp-host-prohibited
 
