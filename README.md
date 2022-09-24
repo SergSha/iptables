@@ -366,11 +366,11 @@ Last login: Mon Sep 19 18:15:36 2022 from 192.168.50.1
 
 <p>и запустим его:</p>
 
-<pre>[root@inetRouter2 ~]# tcpdump -i eth2</pre>
+<pre>[root@inetRouter2 ~]# <b>tcpdump -i eth2</b></pre>
 
 <p>На хостовой машине запустим следующую команду:</p>
 
-<pre>[user@localhost iptables]$ curl 192.168.50.13:8080
+<pre>[user@localhost iptables]$ <b>curl 192.168.50.13:8080</b>
 &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;
 &lt;html&gt;
 &lt;head&gt;
