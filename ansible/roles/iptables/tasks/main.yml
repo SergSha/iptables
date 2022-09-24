@@ -55,6 +55,25 @@
     tags:
     - comment-icmp-host-prohibited
 
+  # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+#  - name: inetRouter | add masquerade
+#    iptables:
+#      table: nat 
+#      chain: POSTROUTING
+#      out_interface: eth0
+#      destination: "! 192.168.0.0/16"
+#      jump: MASQUERADE
+#    notify:
+#    - iptables save
+#    - iptables restart
+
+  - name: inetRouter | add iptables rules
+    copy:
+      src: iptables.rules
+      dest: /etc/sysconfig/iptables
+    notify:
+    - iptables restart
+
   - name: inetRouter | set up route
     copy:
       src: inetRouter-route-eth1
@@ -64,20 +83,6 @@
       mode: 0644
     notify: 
     - network restart redhat
-
-  # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-  - name: inetRouter | add masquerade
-    iptables:
-      table: nat 
-      chain: POSTROUTING
-      out_interface: eth0
-      destination: "! 192.168.0.0/16"
-      jump: MASQUERADE
-    notify:
-    - iptables save
-    - iptables restart
-    tags:
-    - masquerade
   when: ansible_hostname == "inetRouter"
   
 - name: centralRouter | Setup network setting
@@ -162,7 +167,30 @@
       path: /etc/sysconfig/iptables
       regexp: '^(.*)icmp-host-prohibited(.*)$'
       replace: '#\1'
-    notify: 
+
+  # iptables -t nat -A PREROUTING -d 192.168.50.13 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+  - name: inetRouter2 | add masquerade
+    iptables:
+      table: nat 
+      chain: PREROUTING
+#      in_interface: eth2
+      destination: 192.168.50.13
+      protocol: tcp
+      match: tcp
+      destination_port: 8080
+      jump: DNAT
+      to_destination: "192.168.0.2:80"
+
+  # iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -d 192.168.0.2/32 -j MASQUERADE
+  - name: inetRouter2 | add masquerade
+    iptables:
+      table: nat 
+      chain: POSTROUTING
+      source: 192.168.50.0/24
+      destination: 192.168.0.2/32
+      jump: MASQUERADE
+    notify:
+    - iptables save
     - iptables restart
 
   - name: inetRouter2 | disable default route

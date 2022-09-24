@@ -39,7 +39,7 @@ MACHINES = {
     :vm_name => "inetRouter2",
     #:public => {:ip => '10.10.10.1', :adapter => 1},
     :net => [
-      {ip: '192.168.0.34', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
+      {ip: '192.168.0.34', adapter: 2, netmask: "255.255.255.248", virtualbox__intnet: "hw-net"},
       {ip: '192.168.50.13', adapter: 8},
     ]
   },
