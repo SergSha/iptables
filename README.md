@@ -376,7 +376,36 @@ Last login: Mon Sep 19 18:15:36 2022 from 192.168.50.1
 
 <img src="./screens/screen-01.png" alt="screen-01.png" />
 
-<p>Как видим, доступ к веб-серверу centralServer проходит через inetRouter2.</p>
+<p>Чтобы убедиться, что запросы и ответы проходят действительно через сервер inetRouter2, установим tcpdump:</p>
+
+<pre>[root@inetRouter2 ~]# yum -y install tcpdump</pre>
+
+<p>и запустим его:</p>
+
+<pre>[root@inetRouter2 ~]# tcpdump -i eth2
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth2, link-type EN10MB (Ethernet), capture size 262144 bytes
+22:28:41.879602 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [S], seq 825064334, win 29200, options [mss 1460,sackOK,TS val 9065788 ecr 0,nop,wscale 7], length 0
+22:28:41.880257 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [S.], seq 1262494721, ack 825064335, win 28960, options [mss 1460,sackOK,TS val 7692167 ecr 9065788,nop,wscale 6], length 0
+22:28:41.880394 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [.], ack 1, win 229, options [nop,nop,TS val 9065788 ecr 7692167], length 0
+22:28:41.880484 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [P.], seq 1:83, ack 1, win 229, options [nop,nop,TS val 9065789 ecr 7692167], length 82: HTTP: GET / HTTP/1.1
+22:28:41.881158 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [.], ack 83, win 453, options [nop,nop,TS val 7692168 ecr 9065789], length 0
+22:28:41.881197 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [.], seq 1:4345, ack 83, win 453, options [nop,nop,TS val 7692168 ecr 9065789], length 4344: HTTP: HTTP/1.1 200 OK
+22:28:41.881294 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [P.], seq 4345:5074, ack 83, win 453, options [nop,nop,TS val 7692168 ecr 9065789], length 729: HTTP
+22:28:41.881316 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [.], ack 4345, win 296, options [nop,nop,TS val 9065789 ecr 7692168], length 0
+22:28:41.881427 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [.], ack 5074, win 319, options [nop,nop,TS val 9065789 ecr 7692168], length 0
+22:28:41.882417 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [F.], seq 83, ack 5074, win 319, options [nop,nop,TS val 9065791 ecr 7692168], length 0
+22:28:41.883014 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [F.], seq 5074, ack 84, win 453, options [nop,nop,TS val 7692170 ecr 9065791], length 0
+22:28:41.883144 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [.], ack 5075, win 319, options [nop,nop,TS val 9065791 ecr 7692170], length 0
+22:28:46.890682 ARP, Request who-has 192.168.50.1 tell inetRouter2, length 28
+22:28:46.891552 ARP, Reply 192.168.50.1 is-at 0a:00:27:00:00:01 (oui Unknown), length 46
+^C
+14 packets captured
+14 packets received by filter
+0 packets dropped by kernel
+[root@inetRouter2 ~]#</pre>
+
+<p>Как видим, доступ к веб-серверу centralServer, где установлен nginx, проходит через inetRouter2.</p>
 
 <h4>Дефолт в инет оставить через inetRouter</h4>
 

@@ -21,15 +21,19 @@
   when: (ansible_os_family == "RedHat") and (ansible_facts.services["firewalld.service"] is defined) and (ansible_facts.services["firewalld.service"].state == "running")
 #  when: ansible_os_family == "RedHat"
 
-- name: All Redhat Servers | install traceroute redhat
+- name: All Redhat Servers | install traceroute, tcpdump on redhat os family
   yum:
-    name: traceroute
+    name: 
+    - traceroute
+    - tcpdump
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: All Debian Servers | install traceroute debian
+- name: All Debian Servers | install traceroute, tcpdump on debian os family
   apt:
-    name: traceroute
+    name: 
+    - traceroute
+    - tcpdump
     update_cache: yes
   when: ansible_os_family == "Debian"
 
@@ -173,7 +177,6 @@
     iptables:
       table: nat 
       chain: PREROUTING
-#      in_interface: eth2
       destination: 192.168.50.13
       protocol: tcp
       match: tcp
