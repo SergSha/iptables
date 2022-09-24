@@ -310,25 +310,9 @@ Last login: Mon Sep 19 18:15:33 2022 from 192.168.50.1
 
 <p>Теперь, как видим, нам с помощью скрипта knock.sh удалось подключиться по ssh к сереверу inetRouter.</p>
 
-
-
-
-
-
-
-
-
-
 <h4>Добавление inetRouter2</h4>
 
 <p>Установка сервера inetRouter2 уже включена в Vagrantfile. После запуска команды vagrant up сервер inetRouter2 уже установлен и запущен. Настройки сервера в дальнейшем будем производить с помощью ansible.</p>
-
-
-
-
-
-
-
 
 <h4>Запуск nginx на centralServer</h4>
 
@@ -382,8 +366,173 @@ Last login: Mon Sep 19 18:15:36 2022 from 192.168.50.1
 
 <p>и запустим его:</p>
 
-<pre>[root@inetRouter2 ~]# tcpdump -i eth2
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+<pre>[root@inetRouter2 ~]# tcpdump -i eth2</pre>
+
+<p>На хостовой машине запустим следующую команду:</p>
+
+<pre>[user@localhost iptables]$ curl 192.168.50.13:8080
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Welcome to CentOS&lt;/title&gt;
+  &lt;style rel="stylesheet" type="text/css"&gt; 
+
+	html {
+	background-image:url(img/html-background.png);
+	background-color: white;
+	font-family: "DejaVu Sans", "Liberation Sans", sans-serif;
+	font-size: 0.85em;
+	line-height: 1.25em;
+	margin: 0 4% 0 4%;
+	}
+
+	body {
+	border: 10px solid #fff;
+	margin:0;
+	padding:0;
+	background: #fff;
+	}
+
+	/* Links */
+
+	a:link { border-bottom: 1px dotted #ccc; text-decoration: none; color: #204d92; }
+	a:hover { border-bottom:1px dotted #ccc; text-decoration: underline; color: green; }
+	a:active {  border-bottom:1px dotted #ccc; text-decoration: underline; color: #204d92; }
+	a:visited { border-bottom:1px dotted #ccc; text-decoration: none; color: #204d92; }
+	a:visited:hover { border-bottom:1px dotted #ccc; text-decoration: underline; color: green; }
+ 
+	.logo a:link,
+	.logo a:hover,
+	.logo a:visited { border-bottom: none; }
+
+	.mainlinks a:link { border-bottom: 1px dotted #ddd; text-decoration: none; color: #eee; }
+	.mainlinks a:hover { border-bottom:1px dotted #ddd; text-decoration: underline; color: white; }
+	.mainlinks a:active { border-bottom:1px dotted #ddd; text-decoration: underline; color: white; }
+	.mainlinks a:visited { border-bottom:1px dotted #ddd; text-decoration: none; color: white; }
+	.mainlinks a:visited:hover { border-bottom:1px dotted #ddd; text-decoration: underline; color: white; }
+
+	/* User interface styles */
+
+	#header {
+	margin:0;
+	padding: 0.5em;
+	background: #204D8C url(img/header-background.png);
+	text-align: left;
+	}
+
+	.logo {
+	padding: 0;
+	/* For text only logo */
+	font-size: 1.4em;
+	line-height: 1em;
+	font-weight: bold;
+	}
+
+	.logo img {
+	vertical-align: middle;
+	padding-right: 1em;
+	}
+
+	.logo a {
+	color: #fff;
+	text-decoration: none;
+	}
+
+	p {
+	line-height:1.5em;
+	}
+
+	h1 { 
+		margin-bottom: 0;
+		line-height: 1.9em; }
+	h2 { 
+		margin-top: 0;
+		line-height: 1.7em; }
+
+	#content {
+	clear:both;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-bottom: 30px;
+	border-bottom: 5px solid #eee;
+	}
+
+    .mainlinks {
+        float: right;
+        margin-top: 0.5em;
+        text-align: right;
+    }
+
+    ul.mainlinks &gt; li {
+    border-right: 1px dotted #ddd;
+    padding-right: 10px;
+    padding-left: 10px;
+    display: inline;
+    list-style: none;
+    }
+
+    ul.mainlinks &gt; li.last,
+    ul.mainlinks &gt; li.first {
+    border-right: none;
+    }
+
+  &lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div id="header"&gt;
+
+    &lt;ul class="mainlinks"&gt;
+        &lt;li&gt; &lt;a href="http://www.centos.org/"&gt;Home&lt;/a&gt; &lt;/li&gt;
+        &lt;li&gt; &lt;a href="http://wiki.centos.org/"&gt;Wiki&lt;/a&gt; &lt;/li&gt;
+        &lt;li&gt; &lt;a href="http://wiki.centos.org/GettingHelp/ListInfo"&gt;Mailing Lists&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt; &lt;a href="http://www.centos.org/download/mirrors/"&gt;Mirror List&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt; &lt;a href="http://wiki.centos.org/irc"&gt;IRC&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt; &lt;a href="https://www.centos.org/forums/"&gt;Forums&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt; &lt;a href="http://bugs.centos.org/"&gt;Bugs&lt;/a&gt; &lt;/li&gt;
+        &lt;li class="last"&gt; &lt;a href="http://wiki.centos.org/Donate"&gt;Donate&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+	&lt;div class="logo"&gt;
+		&lt;a href="http://www.centos.org/"&gt;&lt;img src="img/centos-logo.png" border="0"&gt;&lt;/a&gt;
+	&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id="content"&gt;
+
+	&lt;h1&gt;Welcome to CentOS&lt;/h1&gt;
+
+	&lt;h2&gt;The Community ENTerprise Operating System&lt;/h2&gt;
+
+	&lt;p&gt;&lt;a href="http://www.centos.org/"&gt;CentOS&lt;/a&gt; is an Enterprise-class Linux Distribution derived from sources freely provided
+to the public by Red Hat, Inc. for Red Hat Enterprise Linux.  CentOS conforms fully with the upstream vendors
+redistribution policy and aims to be functionally compatible. (CentOS mainly changes packages to remove upstream vendor
+branding and artwork.)&lt;/p&gt;
+
+	&lt;p&gt;CentOS is developed by a small but growing team of core
+developers.&nbsp; In turn the core developers are supported by an active user community
+including system administrators, network administrators, enterprise users, managers, core Linux contributors and Linux enthusiasts from around the world.&lt;/p&gt;
+
+	&lt;p&gt;CentOS has numerous advantages including: an active and growing user community, quickly rebuilt, tested, and QA'ed errata packages, an extensive &lt;a href="http://www.centos.org/download/mirrors/"&gt;mirror network&lt;/a&gt;, developers who are contactable and responsive, Special Interest Groups (&lt;a href="http://wiki.centos.org/SpecialInterestGroup/"&gt;SIGs&lt;/a&gt;) to add functionality to the core CentOS distribution, and multiple community support avenues including a &lt;a href="http://wiki.centos.org/"&gt;wiki&lt;/a&gt;, &lt;a
+href="http://wiki.centos.org/irc"&gt;IRC Chat&lt;/a&gt;, &lt;a href="http://wiki.centos.org/GettingHelp/ListInfo"&gt;Email Lists&lt;/a&gt;, &lt;a href="https://www.centos.org/forums/"&gt;Forums&lt;/a&gt;, &lt;a href="http://bugs.centos.org/"&gt;Bugs Database&lt;/a&gt;, and an &lt;a
+href="http://wiki.centos.org/FAQ/"&gt;FAQ&lt;/a&gt;.&lt;/p&gt;
+
+	&lt;/div&gt;
+
+&lt;/div&gt;
+
+
+&lt;/body&gt;
+&lt;/html&gt;
+[user@localhost iptables]$</pre>
+
+<p>В консоли inetRouter2 выведет следующее:</p>
+
+
+<pre>tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on eth2, link-type EN10MB (Ethernet), capture size 262144 bytes
 22:28:41.879602 IP <b>192.168.50.1.39772 > inetRouter2.webcache</b>: Flags [S], seq 825064334, win 29200, options [mss 1460,sackOK,TS val 9065788 ecr 0,nop,wscale 7], length 0
 22:28:41.880257 IP <b>inetRouter2.webcache > 192.168.50.1.39772</b>: Flags [S.], seq 1262494721, ack 825064335, win 28960, options [mss 1460,sackOK,TS val 7692167 ecr 9065788,nop,wscale 6], length 0
